@@ -8,31 +8,47 @@
 require_once 'idiorm.php';
 ORM::configure('sqlite:./db.sqlite');
 
-$username = $_GET['username'];
-$password = $_GET['password'];
-$password_confirm = $_GET['password_confirm'];
-
-
 //echo($username . ' ');
 //echo($password . ' ');
 //echo($password_confirm . ' ');
 
 //username - daca numele de utilizator nu este definit,
 //este vid sau are o lungime mai mica de 6 caractere
-if(strlen($username) < 6 || !isset($username) ){
+if(!isset($_GET['username'])){
+    echo ('username');
+    exit;
+}else{
+    $username = $_GET['username'];
+}
+
+if( strlen($username) < 6 ){
     echo ('username');
     exit;
 }
 
+
 //password - daca parola nu este definita,
 //este vida sau are o lungime mai mica de 6 caractere
-if(strlen($password) < 6 || !isset($password) ){
+if(!isset($_GET['password'])){
+    echo ('password');
+    exit;
+}else{
+    $password = $_GET['password'];
+}
+
+if(strlen($password) < 6 ){
     echo ('password');
     exit;
 }
 
-//TODO: this is the simple version
 //confirm - daca confirmarea parolei nu coincide cu parola
+if(!isset($_GET['password_confirm'])){
+    echo('confirm');
+    exit;
+}else{
+    $password_confirm = $_GET['password_confirm'];
+}
+
 if(strcmp($password,$password_confirm)!=0 ){
     echo ('confirm');
     exit;
@@ -56,7 +72,7 @@ if($person){
 
 //ok - daca nu s-a intors niciun raspuns din cele de mai sus
 create_user($username,$password);
-echo ('user_exists');
+echo ('ok');
 exit;
 
 
@@ -69,7 +85,7 @@ function create_user($username, $password) {
     $person->usr_password = $passwordHash;
     $person->usr_salt = $salt;
 
-    $person->usr_register_date = date("Y-m-d H:i:s");
+    $person->usr_register_date = date("yyyy-MM-dd HH:mm:ss");
     $person->save();
     return $person;
 }
@@ -92,4 +108,5 @@ function checkPassword($pwd, &$errors) {
     return ($errors == $errors_init);
 }
 
+//http://localhost/register.php?username=unusersmechersafda&password=abcabc1&password_confirm=abcabc1
 

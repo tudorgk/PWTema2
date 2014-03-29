@@ -31,6 +31,7 @@ if(strlen($password) < 6 || !isset($password) ){
     exit;
 }
 
+//TODO: this is the simple version
 //confirm - daca confirmarea parolei nu coincide cu parola
 if(strcmp($password,$password_confirm)!=0 ){
     echo ('confirm');
@@ -47,16 +48,31 @@ if($errors){
 
 //TODO: needs testing
 //user_exists - daca exista deja un cont cu acest nume de utilizator
-echo('OK!');
-echo('<br/>');
+$person = ORM::for_table('pw_user')->where('usr_username', $username)->find_one();
+if($person){
+    echo ('user_exists');
+    exit;
+}
+
+//ok - daca nu s-a intors niciun raspuns din cele de mai sus
+create_user($username,$password);
+echo ('user_exists');
 exit;
 
-//
-//$person = ORM::for_table('pw_user')->create();
-//$person->usr_username = $username;
-//$person->age = 20;
-//$person->set_expr('added', 'NOW()');
-//$person->save();
+
+function create_user($username, $password) {
+    $person = ORM::for_table('pw_user')->create();
+    $person->usr_username = $username;
+
+    $salt = uniqid();
+    $passwordHash = sha1($password.$salt);
+    $person->usr_password = $passwordHash;
+    $person->usr_salt = $salt;
+
+    $person->usr_register_date = date("Y-m-d H:i:s");
+    $person->save();
+    return $person;
+}
 
 function checkPassword($pwd, &$errors) {
     $errors_init = $errors;
@@ -77,4 +93,3 @@ function checkPassword($pwd, &$errors) {
 }
 
 
-//localhost/register.php?username=pula?password=in?password_confirm=pizda

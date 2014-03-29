@@ -8,6 +8,13 @@
 
 require_once 'idiorm.php';
 ORM::configure('sqlite:./db.sqlite');
+ORM::configure('id_column_overrides', array(
+        'pw_user' => 'usr_id',
+        'pw_article' => 'art_id',
+        'pw_category' => 'cat_id'
+    ));
+
+
 //username - daca numele de utilizator nu este definit,
 //este vid sau are o lungime mai mica de 6 caractere
 
@@ -56,5 +63,7 @@ if(strcmp($passwordHash,$user->usr_password)!=0){
 }
 
 //ok - daca nu s-a intors niciun raspuns din cele de mai sus
+$user->usr_last_login = date("Y-m-d H:i:s");
+$user->save();
 echo ('ok');
 exit;

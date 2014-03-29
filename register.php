@@ -7,7 +7,11 @@
  */
 require_once 'idiorm.php';
 ORM::configure('sqlite:./db.sqlite');
-
+ORM::configure('id_column_overrides', array(
+        'pw_user' => 'usr_id',
+        'pw_article' => 'art_id',
+        'pw_category' => 'cat_id'
+    ));
 //echo($username . ' ');
 //echo($password . ' ');
 //echo($password_confirm . ' ');
@@ -85,7 +89,8 @@ function create_user($username, $password) {
     $person->usr_password = $passwordHash;
     $person->usr_salt = $salt;
 
-    $person->usr_register_date = date("yyyy-MM-dd HH:mm:ss");
+    $person->usr_register_date = date("Y-m-d H:i:s");
+    $person->usr_last_login = date("Y-m-d H:i:s");
     $person->save();
     return $person;
 }

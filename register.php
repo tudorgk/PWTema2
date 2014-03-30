@@ -12,9 +12,7 @@ ORM::configure('id_column_overrides', array(
         'pw_article' => 'art_id',
         'pw_category' => 'cat_id'
     ));
-//echo($username . ' ');
-//echo($password . ' ');
-//echo($password_confirm . ' ');
+
 
 //username - daca numele de utilizator nu este definit,
 //este vid sau are o lungime mai mica de 6 caractere

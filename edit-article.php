@@ -52,7 +52,11 @@ if(!isset($_POST['author'])|| empty($_POST['author'])){
 }else{
     $author_id = $_POST['author'];
 }
-
+$author = ORM::for_table('pw_user')->where('usr_id', $author_id)->find_one();
+if(!$author){
+    echo ('author');
+    exit;
+}
 //cat_id - daca categoriile nu sunt setate, campul este gol sau
 //exista una sau mai multe catgorii ce nu se regasesc in baza de date
 
@@ -60,15 +64,25 @@ if(!isset($_POST['cat_id'])|| empty($_POST['cat_id'])){
     echo ('cat_id');
     exit;
 }else{
-    $category_id = $_POST['cat_id'];
+    $category_id_array = $_POST['cat_id'];
 }
-$category = ORM::for_table('pw_category')->where('cat_id', $category_id)->find_one();
-if(!$category){
+
+if(!is_array($category_id_array)){
     echo ('cat_id');
     exit;
 }
 
-$article_to_edit =  ORM::for_table('pw_article')->where('art_id', $article_id)->find_one();
+
+foreach($category_id_array as $category_id){
+    $category = ORM::for_table('pw_category')->where('cat_id', $category_id)->find_one();
+    if(!$category){
+        echo ('cat_id');
+        exit;
+    }
+}
+
+
+$article_to_edit = ORM::for_table('pw_article')->where('art_id', $article_id)->find_one();
 $article_to_edit->art_title = $title;
 $article_to_edit->art_content = $content;
 $article_to_edit->art_author = $author_id;
@@ -79,8 +93,11 @@ $article_to_edit->save();
 //    ->where('artc_art_id', $article_id)->find_one()->delete();
 ORM::get_db()->exec('DELETE from pw_article_category WHERE artc_art_id='.$article_id.' ');
 
-$new_entry = ORM::for_table('pw_article_category')->create();
-$new_entry->artc_art_id = $article_id;
-$new_entry->artc_cat_id = $category_id;
-$new_entry->save();
+foreach($category_id_array as $category_id){
+    $new_entry = ORM::for_table('pw_article_category')->create();
+    $new_entry->artc_art_id = $article_id;
+    $new_entry->artc_cat_id = $category_id;
+    $new_entry->save();
+}
 echo('ok');
+

@@ -18,11 +18,11 @@ ORM::configure('id_column_overrides', array(
 
 //username - daca numele de utilizator nu este definit,
 //este vid sau are o lungime mai mica de 6 caractere
-if(!isset($_GET['username'])){
+if(!isset($_POST['username']) || empty($_POST['username'])){
     echo ('username');
     exit;
 }else{
-    $username = $_GET['username'];
+    $username = $_POST['username'];
 }
 
 if( strlen($username) < 6 ){
@@ -33,28 +33,15 @@ if( strlen($username) < 6 ){
 
 //password - daca parola nu este definita,
 //este vida sau are o lungime mai mica de 6 caractere
-if(!isset($_GET['password'])){
+if(!isset($_POST['password'])  || empty($_POST['password'])){
     echo ('password');
     exit;
 }else{
-    $password = $_GET['password'];
+    $password = $_POST['password'];
 }
 
 if(strlen($password) < 6 ){
     echo ('password');
-    exit;
-}
-
-//confirm - daca confirmarea parolei nu coincide cu parola
-if(!isset($_GET['password_confirm'])){
-    echo('confirm');
-    exit;
-}else{
-    $password_confirm = $_GET['password_confirm'];
-}
-
-if(strcmp($password,$password_confirm)!=0 ){
-    echo ('confirm');
     exit;
 }
 
@@ -66,9 +53,22 @@ if($errors){
 }
 
 
+//confirm - daca confirmarea parolei nu coincide cu parola
+if(!isset($_POST['confirm']) || empty($_POST['confirm'])){
+    echo('confirm');
+    exit;
+}else{
+    $password_confirm = $_POST['confirm'];
+}
+
+if(strcmp($password,$password_confirm)!=0 ){
+    echo ('confirm');
+    exit;
+}
 //TODO: needs testing
 //user_exists - daca exista deja un cont cu acest nume de utilizator
 $person = ORM::for_table('pw_user')->where('usr_username', $username)->find_one();
+
 if($person){
     echo ('user_exists');
     exit;
@@ -76,15 +76,13 @@ if($person){
 
 //ok - daca nu s-a intors niciun raspuns din cele de mai sus
 create_user($username,$password);
-echo ('ok');
-exit;
 
 
 function create_user($username, $password) {
     $person = ORM::for_table('pw_user')->create();
     $person->usr_username = $username;
 
-    $salt = uniqid();
+    $salt = generateRandomString();
     $passwordHash = sha1($password.$salt);
     $person->usr_password = $passwordHash;
     $person->usr_salt = $salt;
@@ -113,5 +111,16 @@ function checkPassword($pwd, &$errors) {
     return ($errors == $errors_init);
 }
 
+function generateRandomString($length = 32) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $randomString;
+}
+
+echo ('ok');
+exit;
 //http://localhost/register.php?username=unusersmechersafda&password=abcabc1&password_confirm=abcabc1
 

@@ -18,11 +18,11 @@ ORM::configure('id_column_overrides', array(
 //username - daca numele de utilizator nu este definit,
 //este vid sau are o lungime mai mica de 6 caractere
 
-if(!isset($_GET['username'])){
+if(!isset($_POST['username']) || empty($_POST['username'])){
     echo ('username');
     exit;
 }else{
-    $username = $_GET['username'];
+    $username = $_POST['username'];
 }
 
 if( strlen($username) < 6 ){
@@ -32,11 +32,11 @@ if( strlen($username) < 6 ){
 
 //password - daca parola nu este definita,
 //este vida sau are o lungime mai mica de 6 caractere
-if(!isset($_GET['password'])){
+if(!isset($_POST['password'])|| empty($_POST['password'])){
     echo ('password');
     exit;
 }else{
-    $password = $_GET['password'];
+    $password = $_POST['password'];
 }
 
 if(strlen($password) < 6 ){

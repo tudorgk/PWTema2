@@ -39,7 +39,6 @@ ORM::get_db()->exec(
 ORM::get_db()->exec('DROP TABLE IF EXISTS pw_article_category');
 ORM::get_db()->exec(
     'CREATE TABLE pw_article_category (' .
-    'id INTEGER PRIMARY KEY AUTOINCREMENT,' .
     'artc_art_id INTEGER REFERENCES pw_article(art_id),' .
     'artc_cat_id INTEGER REFERENCES pw_category(cat_id)) '
 );
